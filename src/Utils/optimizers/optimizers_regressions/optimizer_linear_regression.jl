@@ -2,18 +2,10 @@ module OptimizerLinearRegression
 
 include("../../../regressions/linear_regression/Linear_regression.jl")
 
-
-using .LinearRegression
+using CairoMakie
+using ..MyLinearRegression
 export optim!
-
-
-# Plot the data
-# get X matrix for LinearRegressionModel
-X(model::MyLinearRegressionModel) = Matrix(model.features)
-
-Y(model::MyLinearRegressionModel) = 
-# Hypothesis function
-hipotesis_prediction(model::MyLinearRegressionModel, Θ::ParametersRegression) = sum(x .* Θ)
+using ..ParametersRegression
 
 # Gradient calculation function
 @inline function ∇f(f::Function, p::Vector{<:Number})::Vector{Float64}
@@ -32,17 +24,18 @@ hipotesis_prediction(model::MyLinearRegressionModel, Θ::ParametersRegression) =
     return ∇
 end
 
-# Cost function
-function J(Θ::Vector{Float64}, dataset::Dataset)::Float64
-    #return sum((dataset.x * Θ - dataset.y)' *(dataset.x * Θ - dataset.y) )
-    return sum((dataset.x * Θ - dataset.y) .^2)
-end
+
+# vamos a definir la funcion de costo para un modelo de regression 
+export J
+function J(model::MyLinearRegressionModel, paremeters::ParametersRegression)
+
+    X_matriz = Matrix(model.data.features)
+    cost = (X_matriz * paremeters.parameters - model.data.features).^2
+    return cost
+
+end 
 
 
-# Example gradient calculation
-# @time ∇f(f, [0.0, 0.0, 0.0])
-
-# norm(vector::Vector) = √sum(vector .^ 2)
 
 # Gradient Descent function
 function Gradient_descent(J::Function,α::Float64,max_it::Int,Θ₀::Vector,δ = -1) # α es tasa de aprendizaje y p la parada del algoritmo
@@ -62,7 +55,7 @@ end
 
 
 
-function stochastic_gradient_descent(J::Function, α::Float64, max_it::Int, Θ₀::Vector{Float64}, dataset::Dataset, δ::Float64 = -1.0)::Vector{Float64}
+function stochastic_gradient_descent(J::Function, α::Float64, max_it::Int, Θ₀::Vector{Float64}, dataset, δ::Float64 = -1.0)::Vector{Float64}
     Θ = copy(Θ₀)
     (f, c) = size(dataset.x)
     it = 0
@@ -127,13 +120,6 @@ function stochastic_vs_gradient_descence(dataset,J,num_it)
     return fig
 
 end 
-#
-f() = stochastic_vs_gradient_descence(dataset_1,J,300)
-#
-fig = with_theme(f,theme_dark())
-#
-
-save("stochastic_vs_gradient_descence.pdf", fig)
 
 # ! Grafica de ajuste 
 
@@ -187,24 +173,57 @@ end
 
 
 
-@inline function ∇f(f::Function, p::Vector{<:Number})::Vector{Float64}
-    n = length(p)
-    ϵ = 1e-6  # Ajustar ϵ para un mejor compromiso entre precisión y estabilidad
-    ∇ = zeros(Float64, n)
-    
-    for j in 1:n
-        p_plus = copy(p)
-        p_minus = copy(p)
-        p_plus[j] += ϵ
-        p_minus[j] -= ϵ
-        ∇[j] = (f(p_plus...) - f(p_minus...)) / (2 * ϵ)
-    end
-    
-    return ∇
-end
+
+include("../../../regressions/linear_regression/Linear_regression.jl")
+
+using DataFrames
+
+using .LinearRegression
+
+using .OptimizerLinearRegression.OptimizerLinearRegression
+
+using .Data_Structs
+
+features = DataFrame(
+    x1 = [1, 2, 3, 4, 5],
+    x2 = ["A", "B", "B", "B", "A"],
+)
+
+targets = [1, 2, 3, 4, 5]
+
+print(typeof(data))
+
+
+data = MLData(features, targets)
+
+MyLinearRegressionModel
+
+MyLinearRegressionModel
+
+modelo = LinearRegressionModel(data)
 
 # Definir f para que acepte un vector de parámetros
 g(p) = p[1] + p[2]# Suma de todos los elementos del vector
 
 # Llamar a la función de derivada numérica
 ∇f(g, [1.0, 2.0, 3.0])  # Usa números de punto flotante (Float64)
+
+
+using DataFrames, LinearAlgebra
+
+# Crear un DataFrame de ejemplo
+df = DataFrame(a = [1, 2, 3], b = [4, 5, 6], c = [7, 8, 9])
+
+# Vector con el que se hará el producto punto
+v = [0.1, 0.2, 0.3]
+
+# Convertir el DataFrame a una matriz
+matrix_df = Matrix(df)
+
+# Calcular el producto punto para cada fila
+result = matrix_df * v
+
+# Mostrar el resultado
+println(result)
+
+using CairoMakie
