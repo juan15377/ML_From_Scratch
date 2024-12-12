@@ -1,5 +1,5 @@
 module OptimizersAlgorithms
-include("mathematics_functions.jl")
+include("math_functions.jl")
 
 using .MLMathFunctions
 

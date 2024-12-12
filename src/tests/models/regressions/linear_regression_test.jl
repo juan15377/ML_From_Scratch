@@ -9,7 +9,7 @@ using DataFrames, Random
 
 # Generar datos sintéticos
 Random.seed!(123)  # Fijar semilla para reproducibilidad
-n = 10000  # Número de observaciones
+n = 1000000  # Número de observaciones
 
 x1 = randn(n)  # Variable independiente 1 (distribución normal)
 x2 = randn(n)  # Variable independiente 2 (distribución normal)
@@ -32,14 +32,14 @@ data = MLData(features, targets)
 
 model = LinearRegressionModel(data)
 
-optim!(model; α = 0.000001, max_int = 10000)
+optim!(model; α = 0.00000001, max_int = 500)
 
 parameters = model.parameters.parameters
 
 # comparation with GLM
 using GLM 
 
-model_GLM = lm(@formula(y ~ x1 + x2), DataFrame(
+@time model_GLM = lm(@formula(y ~ x1 + x2), DataFrame(
     y = y,
     x1 = x1,
     x2 = x2,

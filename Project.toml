@@ -1,7 +1,10 @@
 [deps]
+CSV = "336ed68f-0bac-5ca0-87d4-7b16caf5d00b"
+CSVFiles = "5d742f6a-9f54-50ce-8119-2520741973ca"
 CairoMakie = "13f3f980-e62b-5c42-98c6-ff1f3baf88f0"
 CategoricalArrays = "324d7699-5711-5eae-9e2f-1d82baa6b597"
 DataFrames = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"
+ExcelFiles = "89b67f3b-d1aa-5f6f-9ca4-282e8d98620d"
 GLM = "38e38edf-8417-5370-95a0-9cbb8c7f171a"
 LanguageServer = "2b0e0bc5-e4fd-59b4-8912-456d1b03d8d7"
 LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"

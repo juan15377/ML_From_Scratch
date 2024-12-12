@@ -7,7 +7,7 @@ using StatsBase
 export MLData
 
 # Función que procesa las características (features) de un DataFrame
-export proccessing_features!
+export processing_features!
 function processing_features!(df::DataFrame)
     new_columns = DataFrame()  # Crear un DataFrame temporal para las nuevas columnas
     columns_delete = []  # Lista de columnas a eliminar
@@ -97,3 +97,4 @@ struct MLData
 end
 
 end
+
