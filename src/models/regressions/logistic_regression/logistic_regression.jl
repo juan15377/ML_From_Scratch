@@ -67,8 +67,6 @@ function J(model::MyLogisticRegressionModel, params::Vector{<:Number})
     return cost[1]  # Devolver el costo como un escalar
 end
 
-
-
 export optim!
 function optim!(model; α = 0.00001, max_it = 10000, method = :Gradient_descent)
 
@@ -88,8 +86,8 @@ end
 
 export confusion_matrix
 function confusion_matrix(model::MyLogisticRegressionModel)
-    y_real = model.data.targets
-    y_pred = predict(model, model.data.features) .>=.5
+    y_real = Int64.(model.data.targets)
+    y_pred = Int64.(predict(model, model.data.features) .>=.5)
     
     # Validación de tamaños
     if length(y_real) != length(y_pred)
@@ -138,7 +136,6 @@ function confusion_matrix(y_real::Vector{Int}, y_pred::Vector{Int})
     
     return cm
 end
-
 
 
 

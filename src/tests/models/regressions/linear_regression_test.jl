@@ -7,6 +7,9 @@ using .Data_Structs
 
 using DataFrames, Random
 
+methods(predict)
+optim!
+
 # Generar datos sintéticos
 Random.seed!(123)  # Fijar semilla para reproducibilidad
 n = 1000000  # Número de observaciones
@@ -44,3 +47,30 @@ using GLM
     x1 = x1,
     x2 = x2,
 ))
+
+
+
+module math_functions
+
+export calcula
+function calcula(x::Int64, y::Int64)
+    return x + y
+end
+
+end 
+
+
+module math_functions_2
+
+export calcula
+function calcula(a::Vector{Float64}, b::Vector{Float64})
+    return a.+ b
+end
+
+end
+
+using .math_functions
+using .math_functions_2
+
+calcula
+@time suma = calcula(10, 5)

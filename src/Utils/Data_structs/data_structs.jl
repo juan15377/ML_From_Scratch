@@ -4,6 +4,8 @@ using DataFrames
 using CategoricalArrays
 using SparseArrays
 using StatsBase
+
+
 export MLData
 
 # Función que procesa las características (features) de un DataFrame
@@ -35,6 +37,7 @@ end
 
 
 # Estructura para almacenar la matriz One-Hot y sus valores
+export MatrixOneHot
 struct MatrixOneHot
     matrix::SparseMatrixCSC{Int64, Int64} 
     values::Vector{String}

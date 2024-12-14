@@ -38,7 +38,7 @@ colors = map(x -> x == 1 ? :red : :blue, y)
 
 model = LogisticRegressionModel(data, y)
 
-optim!(model, α = 0.0001, max_it = 10000)
+optim!(model, α = 0.1, max_it = 10000)
 
 f(x) = (-model.parameters[1] - model.parameters[2]*x)/model.parameters[3]
 
@@ -49,14 +49,36 @@ plot!(axis, data.x1, data.x2, color = colors)
 lines!(axis, data.x1, f.(data.x1))
 fig
 # Mostrar los datos
-println(data)
 
 
+model.parameters
 
+# ? Medimos el costo con los parametros optimizados
 
-1 .- [1, 2, 3]
+J(model, model.parameters)
+
+confusion_matrix(model)
+
+# ahora lo que vamos hacer es optimizar los parametros 
+# 
+using GLM
+model_GLM = glm(@formula(y ~ x1 + x2), DataFrame(y = y, x1 =  vcat(cluster1_x1, cluster2_x1), x2 = vcat(cluster1_x2, cluster2_x2)), Binomial())
+
+# ? Evaluamos el costo con los parametros obtenidos de la packeteria de GLM 
+
+J(model, coef(model_GLM))
+
+coef_model_GLM = coef(model_GLM)
+
+g(x) = (-coef_model_GLM[1] -coef_model_GLM[2]*x)/coef_model_GLM[3]
+lines!(axis, data.x1, g.(data.x1))
+fig
+
 
 include("../../../Utils/Optimization_algorithms.jl")
+
+
+
 
 using .MLMathFunctions
 
@@ -87,20 +109,8 @@ model = LogisticRegressionModel(X, y)
 
 optim!(model; α = 5.0, max_it = 10000)
 
-
-model.parameters
-
-
+J(model, model.parameters)
 confusion_matrix(model)
-
-
-∇f(p -> J(model, p), model.parameters)
-∇f(p -> J(model, p),  coef(model_GLM))
-
-using GLM
-
-
-using DataFrames, GLM
 
 # Definir la fórmula correctamente
 form = @formula(Creditability ~ Account_Balance + Duration_of_Credit_monthly +
@@ -117,6 +127,10 @@ model_GLM = glm(form, data, Binomial(), LogitLink())
 # Ver los resultados
 println(coef(model))  # Coeficientes del modelo
 
+156 + 77
+
+
+J(model, coef(model_GLM))
 predict
 
 confusion_matrix(data.Creditability, Int64.(GLM.predict(model_GLM, data) .>=.5))
