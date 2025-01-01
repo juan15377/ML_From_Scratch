@@ -1,8 +1,11 @@
 include("../../../Utils/Data_structs/data_structs.jl")
 
+module MySoftMaxRegression
 
-using .Data_Structs
+using ..Data_Structs
+using DataFrames
 
+export SoftMaxRegressionModel, predict, confusion_matrix, optim!
 mutable struct MySoftMaxRegressionModel
     data::MLData
     parameters::Matrix{Float64}
@@ -112,166 +115,44 @@ function predict(model::MySoftMaxRegressionModel, new_data::DataFrames.DataFrame
     f(bool, str) = bool ? str : ""
 
     predicted_class_indices = map(row -> row .== maximum(row), eachrow(predicted_probability_class))
+
     predicted_class = map( row -> reduce( * , map(f, row, classes)), predicted_class_indices)
     
     return predicted_class
-    return predicted_class_indices
+end
 
-    return predicted_one_hot
+function confusion_matrix(model::MySoftMaxRegressionModel)
+    
+    categories = model.data.targets.values
+
+    true_matrix_one_hot = model.data.targets.matrix
+
+    f(row) = [categories[index] for (element, index) in zip(row, eachindex(row))  if element == true | element == 1][1]
+
+    true_categories = map(row -> f(row), eachrow(true_matrix_one_hot))
+
+    predict_categories = predict(model, model.data.features)
+
+    num_class = length(categories)
+
+    cm = fill(0, num_class, num_class)
+
+
+    row = 1
+    column = 1
+    for class_true in categories
+        column = 1
+        for class_predict in categories
+            num = (true_categories .== class_true) .& (predict_categories .== class_predict)
+            cm[row, column] = sum(num) # sum(num) is the value in row, an column in confussion matrix
+            column += 1 
+        end 
+        row += 1
+    end 
+
+    return cm, categories
 end
 
 
 
-# generate artificial data
-begin 
-    using Random
-    using DataFrames
-    using CairoMakie
-    
-    # Función para generar datos de una clase
-    function generate_class_data(center::Tuple{Float64, Float64}, num_points::Int, spread::Float64)
-        x1 = center[1] .+ spread .* randn(num_points)
-        x2 = center[2] .+ spread .* randn(num_points)
-        return hcat(x1, x2)
-    end
-    
-    # Generar datos para 4 clases
-    num_points_per_class = 50
-    spread = 0.5
-    
-    Random.seed!(42)  # Para reproducibilidad
-    
-    class1 = generate_class_data((2.0, 2.0), num_points_per_class, spread)
-    class2 = generate_class_data((-2.0, 2.0), num_points_per_class, spread)
-    class3 = generate_class_data((-2.0, -2.0), num_points_per_class, spread)
-    class4 = generate_class_data((2.0, -2.0), num_points_per_class, spread)
-    
-    # Etiquetas para cada clase
-    labels = vcat(
-        fill(1, num_points_per_class),
-        fill(2, num_points_per_class),
-        fill(3, num_points_per_class),
-        fill(4, num_points_per_class)
-    )
-    
-    # Combinar datos y etiquetas en un DataFrame
-    data = vcat(class1, class2, class3, class4)
-    features = DataFrame(one = ones(Float64, length(data[:,1])), x1=data[:, 1], x2=data[:, 2])
-    y = labels
-    # Visualizar los datos
-
-end     
-
-
-
-string(:blue)
-
-
-
-features
-labels = string.(labels)
-
-# Graficar los datos
-begin
-fig = Figure()
-axis = Axis(fig[1, 1])
-map_colors = Dict(["1" => :red, "2" => :green, "3" => :blue, "4" => :magenta])
-colors = [map_colors[i] for i in labels]
-scatter!(axis, features.x1, features.x2, color = colors)
-fig
 end
-
-
-using .MySoftMaxRegression
-using .Data_Structs
-
-data = MLData(features, labels)
-
-model.data.targets.values
-
-
-predict(model, model.data.features)
-
-result = map(row -> row .== maximum(row), eachrow(matrix_predicciones))
-
-data.targets
-
-model = SoftMaxRegressionModel(data)
-
-W
-gradient_softmaxregression(model, W)
-
-sum(labels .== predict(model, model.data.features) )
-
-
-W = Matrix([
-    0 0 0 ;
-    0.4 0.5 0.6 ;
-    0.7 0.8 0.9 ;
-    0.2 0.3 0.4 ;
-]')
-
-
-
-cross_entropy(model, W)
-
-
-
-W
-optim!(model)
-gradient_softmaxregression(model, model.parameters)
-
-
-
-data.features
-
-new_data = [1 1 1;]
-
-X = Matrix(model.data.features)
-
-Y_predicted = probablity_class(W, X)
-
-Y = model.data.targets.matrix
-
-Y_predicted  -  Y
-
-X'
-Y
-
-3 * 4
-@time cross_entropy(model, W)
-
-using .MySoftMaxRegression
-
-
-  # Crear una matriz de ejemplo
-matriz = [2 4 6; 8 10 12; 14 16 18]
-
-# Crear un vector para la división
-vector = [2, 4, 6]
-
-# Dividir cada fila de la matriz por el elemento correspondiente del vector
-resultado = matriz ./ vector_suma_filas
-
-println(resultado)
-
-
-# Crear una matriz de ejemplo
-matriz = [1 2 3; 4 5 6; 7 8 9]
-
-# Sumar los valores de cada fila
-vector_suma_filas = sum(matriz, dims=2)
-
-# Convertir el resultado en un vector unidimensional
-vector_suma_filas = vec(vector_suma_filas)
-
-println(vector_suma_filas)
-
-
-
-A = rand(1000, 1000)  # Matriz 3x4
-
-max_row
-
-# Usando map
-@time result = map(row -> row .== maximum(row), eachrow(A))

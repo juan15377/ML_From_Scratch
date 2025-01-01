@@ -53,6 +53,7 @@ struct MatrixOneHot
 end
 
 # Función para procesar los targets numéricos
+export proccessing_targets
 function proccessing_targets(targets::Vector{<: Number})
     return targets
 end
