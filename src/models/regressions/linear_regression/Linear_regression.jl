@@ -39,6 +39,13 @@ function J(model::MyLinearRegressionModel, paremeters::ParametersRegression)
 end 
 
 
+function gradient(Θ::Vector, model::MyLinearRegressionModel)
+    m, n = size(model.data.features)
+    X = Matrix(model.data.features)
+    ∇f = 1/m * X' * (X * Θ  - model.data.targets)
+    return ∇f
+end 
+
 include("../../../Utils/math_functions.jl")
 include("../../../Utils/Optimization_algorithms.jl")
 
@@ -50,10 +57,9 @@ function optim!(model::MyLinearRegressionModel; method=:Gradient_descent, α=0.0
     if method == :Gradient_descent
         num_params = length(model.data.features[1,:])
         initial_params = ones(Float64, num_params)
-        fit_parameters = Gradient_descent(p -> J(model, ParametersRegression(p)),α, max_int, initial_params)
+        fit_parameters = Gradient_descent(p -> gradient(p, model), α, max_int, initial_params)
         model.parameters = ParametersRegression(fit_parameters)
     end 
-
 end 
 
 

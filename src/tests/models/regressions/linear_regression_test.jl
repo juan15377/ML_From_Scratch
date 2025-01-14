@@ -35,7 +35,11 @@ data = MLData(features, targets)
 
 model = LinearRegressionModel(data)
 
-optim!(model; α = 0.00000001, max_int = 500)
+model.data.features
+
+
+
+@time optim!(model; α = 0.1, max_int = 100)
 
 parameters = model.parameters.parameters
 
@@ -49,28 +53,3 @@ using GLM
 ))
 
 
-
-module math_functions
-
-export calcula
-function calcula(x::Int64, y::Int64)
-    return x + y
-end
-
-end 
-
-
-module math_functions_2
-
-export calcula
-function calcula(a::Vector{Float64}, b::Vector{Float64})
-    return a.+ b
-end
-
-end
-
-using .math_functions
-using .math_functions_2
-
-calcula
-@time suma = calcula(10, 5)

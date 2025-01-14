@@ -38,7 +38,7 @@ colors = map(x -> x == 1 ? :red : :blue, y)
 
 model = LogisticRegressionModel(data, y)
 
-optim!(model, α = 0.1, max_it = 10000)
+optim!(model, α = 3.0, max_it = 100000)
 
 f(x) = (-model.parameters[1] - model.parameters[2]*x)/model.parameters[3]
 
@@ -96,7 +96,6 @@ y = [1, 0, 1, 0, 1]
 
 using CSV
 
-
 data =  CSV.read("src/datasets/german.csv", DataFrame)
 
 X = copy(data)
@@ -107,7 +106,7 @@ y = data[:,1]
 model = LogisticRegressionModel(X, y)
 
 
-optim!(model; α = 5.0, max_it = 10000)
+optim!(model; α = 0.0001, max_it = 100000)
 
 J(model, model.parameters)
 confusion_matrix(model)
@@ -127,7 +126,6 @@ model_GLM = glm(form, data, Binomial(), LogitLink())
 # Ver los resultados
 println(coef(model))  # Coeficientes del modelo
 
-156 + 77
 
 
 J(model, coef(model_GLM))

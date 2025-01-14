@@ -67,12 +67,20 @@ function J(model::MyLogisticRegressionModel, params::Vector{<:Number})
     return cost[1]  # Devolver el costo como un escalar
 end
 
+function gradient(Θ::Vector, model::MyLogisticRegressionModel)
+    X = Matrix(model.data.features)
+    m, n = size(model.data.features)
+    ∇f = 1/m * X' * (sigmoide.(X * Θ) - model.data.targets)
+    return ∇f
+end 
+
+
 export optim!
 function optim!(model; α = 0.00001, max_it = 10000, method = :Gradient_descent)
 
     if method == :Gradient_descent
         params = zeros(length(model.data.features[1,:]))
-        fit_parameters = Gradient_descent(p -> J(model, p), α, max_it, params)
+        fit_parameters = Gradient_descent(p -> gradient(p, model), α, max_it, params)
         model.parameters = fit_parameters
     end
 end 
